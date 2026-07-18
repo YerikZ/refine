@@ -8,14 +8,14 @@ enum Mode: String, CaseIterable, Identifiable {
 }
 
 enum Style: String, CaseIterable, Identifiable {
-    case professional, casual, formal, concise
+    case professional, casual, concise, persuasive
 
     var id: String { rawValue }
     var displayName: String { rawValue.capitalized }
 }
 
 enum Tone: String, CaseIterable, Identifiable {
-    case neutral, friendly, confident, direct
+    case neutral, friendly, confident, formal
 
     var id: String { rawValue }
     var displayName: String { rawValue.capitalized }

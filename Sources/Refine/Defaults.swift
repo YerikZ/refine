@@ -13,5 +13,6 @@ enum Defaults {
         static let mode = "mode"
         static let style = "style"
         static let tone = "tone"
+        static let history = "history"
     }
 }
