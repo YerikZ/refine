@@ -1,4 +1,4 @@
-# Retone
+# Refine
 
 A lightweight macOS menu bar writing tool: paste text, pick a style and tone, and rewrite it inline using a locally hosted LLM (Ollama).
 

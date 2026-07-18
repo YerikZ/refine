@@ -1,4 +1,4 @@
-// Draws the Retone app icon (1024x1024 PNG) with CoreGraphics.
+// Draws the Refine app icon (1024x1024 PNG) with CoreGraphics.
 // Usage: swift scripts/generate-icon.swift <output.png>
 import AppKit
 

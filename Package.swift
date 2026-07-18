@@ -2,9 +2,9 @@
 import PackageDescription
 
 let package = Package(
-    name: "Retone",
+    name: "Refine",
     platforms: [.macOS(.v14)],
     targets: [
-        .executableTarget(name: "Retone", path: "Sources/Retone")
+        .executableTarget(name: "Refine", path: "Sources/Refine")
     ]
 )

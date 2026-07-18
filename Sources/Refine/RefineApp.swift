@@ -9,7 +9,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
 }
 
 @main
-struct RetoneApp: App {
+struct RefineApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) private var appDelegate
     @State private var engine = RewriteEngine()
 
