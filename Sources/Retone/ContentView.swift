@@ -73,7 +73,7 @@ struct ContentView: View {
                 Button("Revert") {
                     engine.revert()
                 }
-                .disabled(engine.previousText == nil || engine.isStreaming)
+                .disabled(!engine.canRevert || engine.isStreaming)
 
                 Button {
                     NSPasteboard.general.clearContents()
@@ -83,6 +83,15 @@ struct ContentView: View {
                 }
                 .help("Copy text")
                 .disabled(engine.text.isEmpty)
+
+                Button {
+                    engine.clear()
+                } label: {
+                    Image(systemName: "xmark.circle")
+                }
+                .help("Clear text and start fresh")
+                .keyboardShortcut(.delete, modifiers: .command)
+                .disabled(engine.text.isEmpty && engine.originalText == nil)
 
                 Spacer()
 

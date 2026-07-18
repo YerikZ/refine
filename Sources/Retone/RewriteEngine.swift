@@ -12,9 +12,11 @@ final class RewriteEngine {
 
     var text = ""
     var phase: Phase = .idle
-    private(set) var previousText: String?
+    /// The user's input as it was before the first rewrite; re-captured when the user edits.
+    private(set) var originalText: String?
 
     @ObservationIgnored private var task: Task<Void, Never>?
+    @ObservationIgnored private var lastOutput: String?
 
     var isStreaming: Bool { phase == .streaming }
 
@@ -23,11 +25,15 @@ final class RewriteEngine {
         return nil
     }
 
+    var canRevert: Bool { originalText != nil && originalText != text }
+
     func rewrite(style: Style, tone: Tone) {
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         cancel()
         let source = text
-        previousText = source
+        if source != lastOutput {
+            originalText = source
+        }
         phase = .streaming
         task = Task { await run(source: source, style: style, tone: tone) }
     }
@@ -38,11 +44,19 @@ final class RewriteEngine {
         if phase == .streaming { phase = .idle }
     }
 
-    /// Swaps the current text with the pre-rewrite text, so Revert also acts as redo.
+    /// Empties the text box and forgets the revert/original state, ready for new input.
+    func clear() {
+        cancel()
+        text = ""
+        originalText = nil
+        lastOutput = nil
+        phase = .idle
+    }
+
+    /// Restores the original input text captured before the first rewrite.
     func revert() {
-        guard let previous = previousText else { return }
-        previousText = text
-        text = previous
+        guard let original = originalText else { return }
+        text = original
         phase = .idle
     }
 
@@ -79,6 +93,7 @@ final class RewriteEngine {
                 phase = .error("The model returned no text.")
             } else {
                 text = final
+                lastOutput = final
                 phase = .idle
             }
         } catch is CancellationError {
