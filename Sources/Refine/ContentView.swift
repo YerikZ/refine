@@ -209,6 +209,10 @@ struct ContentView: View {
                 NSApp.activate(ignoringOtherApps: true)
                 openSettings()
             }
+            iconButton("power", help: "Quit Refine") {
+                NSApp.terminate(nil)
+            }
+            .keyboardShortcut("q", modifiers: .command)
         }
         .padding(.top, 12)
         .padding(.horizontal, 16)

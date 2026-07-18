@@ -9,6 +9,7 @@ struct SettingsView: View {
     @State private var availableModels: [String] = []
     @State private var connectionStatus: String?
     @State private var connectionOK = false
+    @State private var promptText = ""
 
     var body: some View {
         Form {
@@ -58,17 +59,17 @@ struct SettingsView: View {
             }
 
             Section {
-                TextEditor(text: $customPrompt)
+                TextEditor(text: $promptText)
                     .font(.system(.caption, design: .monospaced))
-                    .frame(height: 100)
+                    .frame(height: 110)
                 Button("Reset to Default") {
-                    customPrompt = ""
+                    promptText = PromptBuilder.defaultTemplate
                 }
-                .disabled(customPrompt.isEmpty)
+                .disabled(promptText == PromptBuilder.defaultTemplate)
             } header: {
                 Text("System Prompt")
             } footer: {
-                Text("Applies to Rewrite mode. Leave empty to use the built-in prompt. {style} and {tone} are replaced with the current selections.")
+                Text("Used by Rewrite mode only; Summarise and Polish always use their built-in prompts. {style} and {tone} are replaced with the selected Style and Tone.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }
@@ -76,6 +77,14 @@ struct SettingsView: View {
         .formStyle(.grouped)
         .frame(width: 440)
         .task { await refreshModels(reportStatus: false) }
+        .onAppear {
+            promptText = customPrompt.isEmpty ? PromptBuilder.defaultTemplate : customPrompt
+        }
+        .onChange(of: promptText) { _, newText in
+            // Storing "" keeps the "use built-in" semantics, so future changes to the
+            // default template reach users who never customized it.
+            customPrompt = newText == PromptBuilder.defaultTemplate ? "" : newText
+        }
     }
 
     private func refreshModels(reportStatus: Bool) async {
