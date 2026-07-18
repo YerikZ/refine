@@ -24,10 +24,12 @@ struct ContentView: View {
                     .padding(6)
                     .background(.quaternary.opacity(0.5), in: RoundedRectangle(cornerRadius: 8))
                 if engine.text.isEmpty {
+                    // Matches the TextEditor's text origin: 6pt outer padding
+                    // plus NSTextView's default 5pt line-fragment padding.
                     Text("Paste or type text to rewrite…")
                         .foregroundStyle(.secondary)
-                        .padding(.top, 10)
-                        .padding(.leading, 12)
+                        .padding(.top, 6)
+                        .padding(.leading, 11)
                         .allowsHitTesting(false)
                 }
             }
