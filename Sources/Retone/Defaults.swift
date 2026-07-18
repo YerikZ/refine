@@ -10,6 +10,7 @@ enum Defaults {
         static let model = "model"
         static let temperature = "temperature"
         static let customPrompt = "customPrompt"
+        static let mode = "mode"
         static let style = "style"
         static let tone = "tone"
     }

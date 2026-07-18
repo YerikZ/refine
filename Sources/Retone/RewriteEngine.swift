@@ -27,7 +27,7 @@ final class RewriteEngine {
 
     var canRevert: Bool { originalText != nil && originalText != text }
 
-    func rewrite(style: Style, tone: Tone) {
+    func perform(_ mode: Mode, style: Style, tone: Tone) {
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         cancel()
         let source = text
@@ -35,7 +35,7 @@ final class RewriteEngine {
             originalText = source
         }
         phase = .streaming
-        task = Task { await run(source: source, style: style, tone: tone) }
+        task = Task { await run(source: source, mode: mode, style: style, tone: tone) }
     }
 
     func cancel() {
@@ -60,7 +60,7 @@ final class RewriteEngine {
         phase = .idle
     }
 
-    private func run(source: String, style: Style, tone: Tone) async {
+    private func run(source: String, mode: Mode, style: Style, tone: Tone) async {
         let defaults = UserDefaults.standard
         let serverURL = defaults.string(forKey: Defaults.Key.serverURL) ?? Defaults.serverURL
         let model = defaults.string(forKey: Defaults.Key.model) ?? Defaults.model
@@ -75,7 +75,7 @@ final class RewriteEngine {
                 model: model.isEmpty ? Defaults.model : model,
                 temperature: temperature
             )
-            let system = PromptBuilder.systemPrompt(style: style, tone: tone, customTemplate: customPrompt)
+            let system = PromptBuilder.systemPrompt(mode: mode, style: style, tone: tone, customTemplate: customPrompt)
 
             var raw = ""
             for try await delta in client.streamChat(system: system, user: source) {

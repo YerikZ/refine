@@ -68,7 +68,7 @@ struct SettingsView: View {
             } header: {
                 Text("System Prompt")
             } footer: {
-                Text("Leave empty to use the built-in prompt. {style} and {tone} are replaced with the current selections.")
+                Text("Applies to Rewrite mode. Leave empty to use the built-in prompt. {style} and {tone} are replaced with the current selections.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

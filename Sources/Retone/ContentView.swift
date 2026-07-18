@@ -4,11 +4,13 @@ import SwiftUI
 struct ContentView: View {
     @Bindable var engine: RewriteEngine
 
+    @AppStorage(Defaults.Key.mode) private var modeRaw = Mode.rewrite.rawValue
     @AppStorage(Defaults.Key.style) private var styleRaw = Style.professional.rawValue
     @AppStorage(Defaults.Key.tone) private var toneRaw = Tone.neutral.rawValue
 
     @Environment(\.openSettings) private var openSettings
 
+    private var mode: Mode { Mode(rawValue: modeRaw) ?? .rewrite }
     private var style: Style { Style(rawValue: styleRaw) ?? .professional }
     private var tone: Tone { Tone(rawValue: toneRaw) ?? .neutral }
 
@@ -30,19 +32,29 @@ struct ContentView: View {
                 }
             }
 
-            HStack(spacing: 12) {
-                Picker("Style", selection: $styleRaw) {
-                    ForEach(Style.allCases) { style in
-                        Text(style.displayName).tag(style.rawValue)
-                    }
-                }
-                Picker("Tone", selection: $toneRaw) {
-                    ForEach(Tone.allCases) { tone in
-                        Text(tone.displayName).tag(tone.rawValue)
-                    }
+            Picker("Mode", selection: $modeRaw) {
+                ForEach(Mode.allCases) { mode in
+                    Text(mode.displayName).tag(mode.rawValue)
                 }
             }
-            .pickerStyle(.menu)
+            .pickerStyle(.segmented)
+            .labelsHidden()
+
+            if mode == .rewrite {
+                HStack(spacing: 12) {
+                    Picker("Style", selection: $styleRaw) {
+                        ForEach(Style.allCases) { style in
+                            Text(style.displayName).tag(style.rawValue)
+                        }
+                    }
+                    Picker("Tone", selection: $toneRaw) {
+                        ForEach(Tone.allCases) { tone in
+                            Text(tone.displayName).tag(tone.rawValue)
+                        }
+                    }
+                }
+                .pickerStyle(.menu)
+            }
 
             if let message = engine.errorMessage {
                 Text(message)
@@ -62,8 +74,8 @@ struct ContentView: View {
                         }
                     }
                 } else {
-                    Button("Rewrite") {
-                        engine.rewrite(style: style, tone: tone)
+                    Button(mode.displayName) {
+                        engine.perform(mode, style: style, tone: tone)
                     }
                     .buttonStyle(.borderedProminent)
                     .keyboardShortcut(.return, modifiers: .command)

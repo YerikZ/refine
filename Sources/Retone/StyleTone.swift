@@ -1,14 +1,21 @@
 import Foundation
 
+enum Mode: String, CaseIterable, Identifiable {
+    case rewrite, summarise, polish
+
+    var id: String { rawValue }
+    var displayName: String { rawValue.capitalized }
+}
+
 enum Style: String, CaseIterable, Identifiable {
-    case formal, casual, professional, academic, creative, concise
+    case professional, casual, formal, concise
 
     var id: String { rawValue }
     var displayName: String { rawValue.capitalized }
 }
 
 enum Tone: String, CaseIterable, Identifiable {
-    case neutral, friendly, confident, persuasive, empathetic, direct
+    case neutral, friendly, confident, direct
 
     var id: String { rawValue }
     var displayName: String { rawValue.capitalized }
