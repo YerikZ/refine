@@ -8,14 +8,23 @@ enum Mode: String, CaseIterable, Identifiable {
 }
 
 enum Style: String, CaseIterable, Identifiable {
-    case professional, casual, concise, persuasive
+    case professional, casual, persuasive
 
     var id: String { rawValue }
     var displayName: String { rawValue.capitalized }
 }
 
 enum Tone: String, CaseIterable, Identifiable {
-    case neutral, friendly, confident, formal
+    case neutral, friendly, confident, direct
+
+    var id: String { rawValue }
+    var displayName: String { rawValue.capitalized }
+}
+
+/// Independent of Style/Tone so it can stack with any register choice
+/// (e.g. "professional and concise", "casual and concise").
+enum Length: String, CaseIterable, Identifiable {
+    case normal, concise
 
     var id: String { rawValue }
     var displayName: String { rawValue.capitalized }

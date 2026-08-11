@@ -69,7 +69,7 @@ struct SettingsView: View {
             } header: {
                 Text("System Prompt")
             } footer: {
-                Text("Used by Rewrite mode only; Summarise and Polish always use their built-in prompts. {style} and {tone} are replaced with the selected Style and Tone.")
+                Text("Used by Rewrite mode only; other modes always use their built-in prompts. {style}, {tone}, and {length} are replaced with the selected Style, Tone, and Length.")
                     .font(.caption)
                     .foregroundStyle(.secondary)
             }

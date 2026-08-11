@@ -6,9 +6,34 @@ struct HistoryEntry: Codable, Identifiable, Equatable {
     let mode: String
     let style: String
     let tone: String
+    let length: String
     let input: String
     let output: String
     let date: Date
+
+    init(id: UUID, mode: String, style: String, tone: String, length: String, input: String, output: String, date: Date) {
+        self.id = id
+        self.mode = mode
+        self.style = style
+        self.tone = tone
+        self.length = length
+        self.input = input
+        self.output = output
+        self.date = date
+    }
+
+    /// `length` is decoded leniently since history saved before this field existed won't have it.
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        id = try container.decode(UUID.self, forKey: .id)
+        mode = try container.decode(String.self, forKey: .mode)
+        style = try container.decode(String.self, forKey: .style)
+        tone = try container.decode(String.self, forKey: .tone)
+        length = try container.decodeIfPresent(String.self, forKey: .length) ?? Length.normal.rawValue
+        input = try container.decode(String.self, forKey: .input)
+        output = try container.decode(String.self, forKey: .output)
+        date = try container.decode(Date.self, forKey: .date)
+    }
 
     var label: String {
         let mode = Mode(rawValue: mode)?.displayName ?? mode
@@ -62,12 +87,12 @@ final class RewriteEngine {
         }
     }
 
-    func perform(_ mode: Mode, style: Style, tone: Tone) {
+    func perform(_ mode: Mode, style: Style, tone: Tone, length: Length) {
         guard !text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty else { return }
         cancel()
         output = nil
         phase = .streaming
-        task = Task { await run(source: text, mode: mode, style: style, tone: tone) }
+        task = Task { await run(source: text, mode: mode, style: style, tone: tone, length: length) }
     }
 
     func cancel() {
@@ -112,9 +137,9 @@ final class RewriteEngine {
         phase = .idle
     }
 
-    private func addHistory(mode: Mode, style: Style, tone: Tone, input: String, output: String) {
+    private func addHistory(mode: Mode, style: Style, tone: Tone, length: Length, input: String, output: String) {
         let entry = HistoryEntry(
-            id: UUID(), mode: mode.rawValue, style: style.rawValue, tone: tone.rawValue,
+            id: UUID(), mode: mode.rawValue, style: style.rawValue, tone: tone.rawValue, length: length.rawValue,
             input: input, output: output, date: Date()
         )
         history = Array(([entry] + history).prefix(5))
@@ -123,7 +148,7 @@ final class RewriteEngine {
         }
     }
 
-    private func run(source: String, mode: Mode, style: Style, tone: Tone) async {
+    private func run(source: String, mode: Mode, style: Style, tone: Tone, length: Length) async {
         let defaults = UserDefaults.standard
         let serverURL = defaults.string(forKey: Defaults.Key.serverURL) ?? Defaults.serverURL
         let model = defaults.string(forKey: Defaults.Key.model) ?? Defaults.model
@@ -138,7 +163,7 @@ final class RewriteEngine {
                 model: model.isEmpty ? Defaults.model : model,
                 temperature: temperature
             )
-            let system = PromptBuilder.systemPrompt(mode: mode, style: style, tone: tone, customTemplate: customPrompt)
+            let system = PromptBuilder.systemPrompt(mode: mode, style: style, tone: tone, length: length, customTemplate: customPrompt)
 
             var raw = ""
             for try await delta in client.streamChat(system: system, user: source) {
@@ -157,7 +182,7 @@ final class RewriteEngine {
             } else {
                 output = final
                 phase = .idle
-                addHistory(mode: mode, style: style, tone: tone, input: source, output: final)
+                addHistory(mode: mode, style: style, tone: tone, length: length, input: source, output: final)
             }
         } catch is CancellationError {
             phase = .idle

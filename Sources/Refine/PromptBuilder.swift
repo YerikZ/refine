@@ -11,7 +11,7 @@ enum PromptBuilder {
 
     static let defaultTemplate = """
     You are a writing assistant. Rewrite the user's text in a {style} style with a {tone} tone. \
-    Preserve the original meaning and language, and keep it about the same length. \
+    Preserve the original meaning and language.{length} \
     \(bulletFormattingInstruction) \
     Output ONLY the rewritten text — no preamble, no quotes, no explanations.
     """
@@ -40,7 +40,7 @@ enum PromptBuilder {
     """
 
     /// The custom template override applies to Rewrite mode only.
-    static func systemPrompt(mode: Mode, style: Style, tone: Tone, customTemplate: String) -> String {
+    static func systemPrompt(mode: Mode, style: Style, tone: Tone, length: Length, customTemplate: String) -> String {
         switch mode {
         case .summarise:
             return summariseTemplate
@@ -51,9 +51,13 @@ enum PromptBuilder {
         case .rewrite:
             let trimmed = customTemplate.trimmingCharacters(in: .whitespacesAndNewlines)
             let template = trimmed.isEmpty ? defaultTemplate : trimmed
+            let lengthClause = length == .concise
+                ? " Make it noticeably shorter and more concise than the original, trimming unnecessary words while preserving the key meaning."
+                : " Keep it about the same length as the original."
             return template
                 .replacingOccurrences(of: "{style}", with: style.rawValue)
                 .replacingOccurrences(of: "{tone}", with: tone.rawValue)
+                .replacingOccurrences(of: "{length}", with: lengthClause)
         }
     }
 

@@ -7,6 +7,7 @@ struct ContentView: View {
     @AppStorage(Defaults.Key.mode) private var modeRaw = Mode.rewrite.rawValue
     @AppStorage(Defaults.Key.style) private var styleRaw = Style.professional.rawValue
     @AppStorage(Defaults.Key.tone) private var toneRaw = Tone.neutral.rawValue
+    @AppStorage(Defaults.Key.length) private var lengthRaw = Length.normal.rawValue
 
     @State private var showHistory = false
     @State private var hoveredMode: Mode?
@@ -17,6 +18,7 @@ struct ContentView: View {
     private var mode: Mode { Mode(rawValue: modeRaw) ?? .rewrite }
     private var style: Style { Style(rawValue: styleRaw) ?? .professional }
     private var tone: Tone { Tone(rawValue: toneRaw) ?? .neutral }
+    private var length: Length { Length(rawValue: lengthRaw) ?? .normal }
     private var canRun: Bool { !engine.text.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty }
 
     var body: some View {
@@ -140,9 +142,10 @@ struct ContentView: View {
     // MARK: - Style / Tone selects
 
     private var selects: some View {
-        HStack(spacing: 12) {
+        HStack(spacing: 10) {
             labeledSelect("Style", selection: $styleRaw, options: Style.allCases.map { ($0.rawValue, $0.displayName) })
             labeledSelect("Tone", selection: $toneRaw, options: Tone.allCases.map { ($0.rawValue, $0.displayName) })
+            labeledSelect("Length", selection: $lengthRaw, options: Length.allCases.map { ($0.rawValue, $0.displayName) })
         }
         .padding(.horizontal, 16)
         .padding(.bottom, 14)
@@ -226,7 +229,7 @@ struct ContentView: View {
             if engine.isStreaming {
                 engine.cancel()
             } else {
-                engine.perform(mode, style: style, tone: tone)
+                engine.perform(mode, style: style, tone: tone, length: length)
             }
         } label: {
             HStack(spacing: 8) {
@@ -303,6 +306,7 @@ struct ContentView: View {
                     modeRaw = entry.mode
                     styleRaw = entry.style
                     toneRaw = entry.tone
+                    lengthRaw = entry.length
                     engine.restore(entry)
                 }
             }
