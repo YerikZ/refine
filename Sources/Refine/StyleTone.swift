@@ -1,7 +1,7 @@
 import Foundation
 
 enum Mode: String, CaseIterable, Identifiable {
-    case rewrite, summarise, polish, proofread
+    case proofread, rewrite, summarise, polish
 
     var id: String { rawValue }
     var displayName: String { rawValue.capitalized }

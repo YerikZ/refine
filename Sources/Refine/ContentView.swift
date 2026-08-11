@@ -4,7 +4,7 @@ import SwiftUI
 struct ContentView: View {
     @Bindable var engine: RewriteEngine
 
-    @AppStorage(Defaults.Key.mode) private var modeRaw = Mode.rewrite.rawValue
+    @AppStorage(Defaults.Key.mode) private var modeRaw = Mode.proofread.rawValue
     @AppStorage(Defaults.Key.style) private var styleRaw = Style.professional.rawValue
     @AppStorage(Defaults.Key.tone) private var toneRaw = Tone.neutral.rawValue
     @AppStorage(Defaults.Key.length) private var lengthRaw = Length.normal.rawValue
@@ -15,7 +15,7 @@ struct ContentView: View {
 
     @Environment(\.openSettings) private var openSettings
 
-    private var mode: Mode { Mode(rawValue: modeRaw) ?? .rewrite }
+    private var mode: Mode { Mode(rawValue: modeRaw) ?? .proofread }
     private var style: Style { Style(rawValue: styleRaw) ?? .professional }
     private var tone: Tone { Tone(rawValue: toneRaw) ?? .neutral }
     private var length: Length { Length(rawValue: lengthRaw) ?? .normal }
