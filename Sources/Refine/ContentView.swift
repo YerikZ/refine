@@ -85,13 +85,15 @@ struct ContentView: View {
                 .font(.system(size: 11, weight: .semibold))
                 .kerning(0.44)
                 .foregroundStyle(Theme.accent)
-            Text(output)
-                .font(.system(size: 14))
-                .lineSpacing(3.5)
-                .foregroundStyle(Theme.textBody)
-                .textSelection(.enabled)
-                .fixedSize(horizontal: false, vertical: true)
-                .frame(maxWidth: .infinity, alignment: .leading)
+            ScrollView {
+                Text(output)
+                    .font(.system(size: 14))
+                    .lineSpacing(3.5)
+                    .foregroundStyle(Theme.textBody)
+                    .textSelection(.enabled)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+            }
+            .frame(height: 130)
         }
         .padding(.vertical, 12)
         .padding(.horizontal, 14)
